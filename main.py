@@ -1,8 +1,6 @@
-from reports.simple_report import SimpleReport
+from reports.complete_report import CompleteReport
 
 
-instan = SimpleReport()
-
-lista = instan.f_generate()
+lista = CompleteReport.f_generate()
 
 print(lista)
