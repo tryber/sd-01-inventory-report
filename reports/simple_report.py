@@ -1,33 +1,43 @@
-from utils.main import GetData, Format_Obj
+from utils.abc_utils import GetData, Format_Obj
 
 from datetime import datetime
 
 from collections import Counter
 
 
-class SimpleReport(GetData):
+class SimpleReport:
     def __init__(self, list_of_dicts=None):
-        self.list_of_dicts = list_of_dicts or list()
+        self.list_of_dicts = list_of_dicts or []
         self.path = "data/inventory_20200823.json"
+        self.module_date = "%Y-%m-%d"
+
+    def _f_date(self, value):
+        return datetime.strptime(value, self.module_date).date()
 
     def f_generate(self):
         data = GetData(self.path)
         datas = data.f_by_get_data_json()
-        data_f = ""
-        data_v = ""
-        data_de_fabricacao = datetime.strptime(data_f, "%y/%m/%d")
-        validade = datetime.strptime(data_v, "%y/%m/%d")
+
+        data_de_fabricacao = self._f_date(datas[0]["data_de_fabricacao"])
+
+        data_de_validade = self._f_date(datas[0]["data_de_validade"])
+
         name = Counter(empresa["nome_da_empresa"] for empresa in datas)
 
         greater_amount_of_stocks = name[max(name, key=name.get)]
 
         for obj in datas:
-            for keys, values in obj:
-                if keys in "data_de_fabricacao" and values < data_de_fabricacao:
-                    data_f = values
-                if keys in "data_de_validade" and values > validade:
-                    data_v = values
-        obj_output = Format_Obj(data_de_fabricacao, validade, greater_amount_of_stocks)
+            for key, value in obj.items():
+                if (
+                    key == "data_de_fabricacao"
+                    and self._f_date(value) < data_de_fabricacao
+                ):
+                    data_de_fabricacao = self._f_date(value)
+                if key == "data_de_validade" and self._f_date(value) > data_de_validade:
+                    data_de_validade = self._f_date(value)
+        obj_output = Format_Obj(
+            data_de_fabricacao, data_de_validade, greater_amount_of_stocks
+        )
         return obj_output.f_hand_over_keys()
 
 
