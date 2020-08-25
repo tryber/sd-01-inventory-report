@@ -1,4 +1,4 @@
-from utils.abc_utils import GetData, Format_Obj
+from utils.abc_utils import Format_Report_Simple
 
 from datetime import datetime
 
@@ -8,37 +8,33 @@ from collections import Counter
 class SimpleReport:
     def __init__(self, list_of_dicts=None):
         self.list_of_dicts = list_of_dicts or []
-        self.path = "data/inventory_20200823.json"
         self.module_date = "%Y-%m-%d"
 
     def _f_date(self, value):
         return datetime.strptime(value, self.module_date).date()
 
-    def f_generate(self):
-        data = GetData(self.path)
-        datas = data.f_by_get_data_json()
+    def f_generate(self, data):
+        oldest_data_fabricacao = self._f_date(data[0]["data_de_fabricacao"])
 
-        data_de_fabricacao = self._f_date(datas[0]["data_de_fabricacao"])
+        newest_data_validade = self._f_date(data[0]["data_de_validade"])
 
-        data_de_validade = self._f_date(datas[0]["data_de_validade"])
+        name = Counter(empresa["nome_da_empresa"] for empresa in data)
 
-        name = Counter(empresa["nome_da_empresa"] for empresa in datas)
+        greater_of_stocks = name[max(name, key=name.get)]
 
-        greater_amount_of_stocks = name[max(name, key=name.get)]
+        for obj in list(data):
+            cur_data_fabricacao = self._f_date(obj.get("data_de_fabricacao"))
+            curr_data_validade = self._f_date(obj.get("data_de_validade"))
 
-        for obj in datas:
-            for key, value in obj.items():
-                if (
-                    key == "data_de_fabricacao"
-                    and self._f_date(value) < data_de_fabricacao
-                ):
-                    data_de_fabricacao = self._f_date(value)
-                if key == "data_de_validade" and self._f_date(value) > data_de_validade:
-                    data_de_validade = self._f_date(value)
-        obj_output = Format_Obj(
-            data_de_fabricacao, data_de_validade, greater_amount_of_stocks
+            if cur_data_fabricacao < oldest_data_fabricacao:
+                oldest_data_fabricacao = cur_data_fabricacao
+            if curr_data_validade > newest_data_validade:
+                newest_data_validade = curr_data_validade
+
+        report_output = Format_Report_Simple(
+            oldest_data_fabricacao, newest_data_validade, greater_of_stocks
         )
-        return obj_output.f_hand_over_keys()
+        return report_output.f_deliver_formatted_report()
 
 
 datass = {
