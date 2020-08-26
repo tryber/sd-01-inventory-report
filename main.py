@@ -4,22 +4,28 @@ from reports.complete_report import CompleteReport
 
 from utils.abc_utils import GetData
 
+import json
 
-json_retriever = GetData("data/inventory_20200823.json")
+path = {
+    "csv": "data/inventory_20200823.csv",
+    "json": "data/inventory_20200823.json",
+    "xml": "data/inventory_20200823.xml",
+}
 
-data = json_retriever.f_by_get_data_json()
+data_raw = GetData(path["xml"])
 
-report_simple = SimpleReport()
+data = data_raw.f_by_scrap_data_xml()
 
-new_report_simple = report_simple.f_generate(data)
+# report_simple = SimpleReport()
+
+# new_report_simple = report_simple.f_generate(data)
 
 
-report = CompleteReport()
+# report = CompleteReport()
 
-new_report = report.f_generate(data)
+# new_report = report.f_generate(data)
 
 print("*" * 70)
-
-print(new_report)
+print(data)
 
 print("*" * 70)

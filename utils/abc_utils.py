@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+from bs4 import BeautifulSoup
+
 import json
 
 import csv
@@ -12,7 +14,11 @@ class I_Read_Json_CSV_XML(ABC):
 
     @abstractmethod
     def f_by_get_data_csv():
-        """ pegar dados do arquivo json """
+        """ pegar dados do arquivo csv """
+
+    @abstractmethod
+    def f_by_scrap_data_xml():
+        """ pegar dados do arquivo xml """
 
 
 class I_Factory_Report(ABC):
@@ -46,6 +52,34 @@ class GetData(I_Read_Json_CSV_XML):
             for arq in rd:
                 data.append(arq)
         return data
+
+    def f_by_scrap_data_xml(self):
+        try:
+            data = []
+            file_xml = open(self.path)
+
+            obj_soup = BeautifulSoup(file_xml, "html.parser")
+
+            values = [tag for tag in obj_soup.find_all("record")]
+
+            return values[0]
+
+            # soup = [tag for tag in obj_soup.find_all("record")]
+
+            # keys_scrap = list(set(tag.name for tag in obj_soup.find_all()))[:-1]
+
+            # for target in soup:
+            #     obj = {}
+            #     obj.clear()
+            #     for k in keys_scrap:
+            #         teste = target.find(k)
+            #         # print(teste)
+            #         obj[k] = teste
+            #         data.append(obj)
+
+            # return data[0]
+        except Exception as exc:
+            return exc
 
 
 class Format_Report_Simple(I_Factory_Report):
@@ -82,3 +116,14 @@ class Format_Report_Complete(I_Factory_Report_Complete):
 """ verificar se o getdata é um quer dizer herança.
 especilizar um comportamento """
 """ tem um, somente composição """
+
+
+# obj ={
+#     "id": '',
+#     "nome_do_produto": '',
+#     "nome_da_empresa": '',
+#     "data_de_fabricacao": '',
+#     "data_de_validade": '',
+#     "numero_de_serie": "",
+#     "instrucoes_de_armazenamento": ""
+#   }
