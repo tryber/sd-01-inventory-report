@@ -1,85 +1,7 @@
-from abc import ABC, abstractmethod
-
-from bs4 import BeautifulSoup
-
-import json
-
-import csv
-
-
-class I_Read_Json_CSV_XML(ABC):
-    @abstractmethod
-    def f_by_get_data_json():
-        """ pegar dados do arquivo json """
-
-    @abstractmethod
-    def f_by_get_data_csv():
-        """ pegar dados do arquivo csv """
-
-    @abstractmethod
-    def f_by_scrap_data_xml():
-        """ pegar dados do arquivo xml """
-
-
-class I_Factory_Report(ABC):
-    @abstractmethod
-    def f_deliver_formatted_report():
-        """ entrega as keys do objeto de output """
-
-
-class I_Factory_Report_Complete(ABC):
-    @abstractmethod
-    def f_deliver_formatted_report():
-        """ entrega as keys do objeto de output """
-
-
-class GetData(I_Read_Json_CSV_XML):
-    def __init__(self, path):
-        self.path = path
-
-    def f_by_get_data_json(self):
-        data = []
-        with open(self.path) as file:
-            obj = json.load(file)
-            for arq in obj:
-                data.append(arq)
-        return data
-
-    def f_by_get_data_csv(self):
-        data = []
-        with open(self.path, "r") as file_csv:
-            rd = csv.DictReader(file_csv, delimiter=",")
-            for arq in rd:
-                data.append(arq)
-        return data
-
-    def f_by_scrap_data_xml(self):
-        try:
-            data = []
-            file_xml = open(self.path)
-
-            obj_soup = BeautifulSoup(file_xml, "html.parser")
-
-            values = [tag for tag in obj_soup.find_all("record")]
-
-            return values[0]
-
-            # soup = [tag for tag in obj_soup.find_all("record")]
-
-            # keys_scrap = list(set(tag.name for tag in obj_soup.find_all()))[:-1]
-
-            # for target in soup:
-            #     obj = {}
-            #     obj.clear()
-            #     for k in keys_scrap:
-            #         teste = target.find(k)
-            #         # print(teste)
-            #         obj[k] = teste
-            #         data.append(obj)
-
-            # return data[0]
-        except Exception as exc:
-            return exc
+from utils.abc_utils_abstract import (
+    I_Factory_Report,
+    I_Factory_Report_Complete,
+)
 
 
 class Format_Report_Simple(I_Factory_Report):
@@ -89,20 +11,20 @@ class Format_Report_Simple(I_Factory_Report):
         self.nome_da_empresa = nome_da_empresa
 
     def f_deliver_formatted_report(self):
-        val = f"""
+        report_simple = f"""
             Data de fabricação mais antiga → {self.fabricacao}
             Data de validade mais próxima → {self.validade}
             Empresa com maior quantidade
             de produtos estocados → {self.nome_da_empresa}
             """
-        return val
+        return report_simple
 
 
 class Format_Report_Complete(I_Factory_Report_Complete):
     @staticmethod
-    def f_deliver_formatted_report(report_simple, counter):
+    def f_deliver_formatted_report(classe_report_simple, counter):
         str_report_return = f"""\033[1;32m
-        {report_simple}
+        {classe_report_simple}
         \n
         Produtos estocados por empresa:
         \033[1;35m
@@ -111,19 +33,3 @@ class Format_Report_Complete(I_Factory_Report_Complete):
             reports = f" - {inc}: {amount}"
             str_report_return += f"\033[1;35m{reports}\n"
         return str_report_return
-
-
-""" verificar se o getdata é um quer dizer herança.
-especilizar um comportamento """
-""" tem um, somente composição """
-
-
-# obj ={
-#     "id": '',
-#     "nome_do_produto": '',
-#     "nome_da_empresa": '',
-#     "data_de_fabricacao": '',
-#     "data_de_validade": '',
-#     "numero_de_serie": "",
-#     "instrucoes_de_armazenamento": ""
-#   }

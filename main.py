@@ -1,10 +1,8 @@
-from reports.simple_report import SimpleReport
+from inventory.inventory import Inventory
 
-from reports.complete_report import CompleteReport
+from importer.xml_importer import XmlImporter
 
-from utils.abc_utils import GetData
-
-import json
+from importer.json_importer import JsonImporter
 
 path = {
     "csv": "data/inventory_20200823.csv",
@@ -12,20 +10,22 @@ path = {
     "xml": "data/inventory_20200823.xml",
 }
 
-data_raw = GetData(path["xml"])
 
-data = data_raw.f_by_scrap_data_xml()
-
-# report_simple = SimpleReport()
-
-# new_report_simple = report_simple.f_generate(data)
+testes_invetory = Inventory(XmlImporter())
 
 
-# report = CompleteReport()
+# print("*" * 70)
+# print(testes_invetory.f_import_data("complete", path["xml"]))
+# print("*" * 70)
 
-# new_report = report.f_generate(data)
+testes_invetory.importer = JsonImporter()
 
 print("*" * 70)
-print(data)
-
+print(testes_invetory.f_import_data("complete", path["csv"]))
 print("*" * 70)
+
+
+"""
+Esse arquivo é somente de testes. não é nescessário fazer CR nele!!!
+
+"""
