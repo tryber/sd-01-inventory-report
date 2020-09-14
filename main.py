@@ -8,6 +8,7 @@ from importer.csv_importer import CsvImporter
 
 from inventory.inventory_iterator import StockInventory
 
+
 path = {
     "csv": "data/inventory_20200823.csv",
     "json": "data/inventory_20200823.json",
