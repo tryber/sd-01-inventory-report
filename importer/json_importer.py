@@ -3,7 +3,7 @@ from importer.importer import Importer
 
 
 class JsonImporter(Importer):
-    def import_data(path):
+    def import_data(self, path):
         if not path.endswith("json"):
             raise ValueError("Arquivo invalido")
         list_of_dicts = []
