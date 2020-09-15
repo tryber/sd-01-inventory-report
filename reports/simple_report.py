@@ -4,8 +4,8 @@ from utils.messages import generate_return_message
 
 
 class SimpleReport:
-    def __init__(self, list_os_dicts):
-        self.list_os_dicts = list_os_dicts
+    def __init__(self, list_os_dicts=None):
+        self.list_os_dicts = list_os_dicts or []
         self.module_date = "%Y-%m-%d"
 
     def generate(self):
@@ -20,7 +20,7 @@ class SimpleReport:
           oldest_fabricate,
           near_validate
         )
-        return print(msg)
+        return print(*msg, sep='\n')
 
     def filter_validate_date(self):
         biggest_date = '0000-00-00'
@@ -32,6 +32,6 @@ class SimpleReport:
     def filter_fabricate_date(self):
         less_date = datetime.today().date()
         for dict_value in self.list_os_dicts:
-            if str(dict_value["data_de_fabricacao"]) < less_date:
+            if str(dict_value["data_de_fabricacao"]) < str(less_date):
                 less_date = dict_value["data_de_fabricacao"]
         return less_date
